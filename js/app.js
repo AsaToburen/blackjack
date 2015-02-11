@@ -1,40 +1,86 @@
 
+var dealerHand = document.getElementById('dealerHand');
+var userHand = document.getElementById('userHand');
+
+//From Gist
+
+  var Suit = function(name, abbr, char) {
+    this.name = name;
+    this.abbr = abbr;
+    this.char = char;
+  };
+ 
+  var suits = {
+    0: new Suit('Clubs', 'C', '&clubs;'),
+    1: new Suit('Diamonds', 'D', '&diams;'),
+    2: new Suit('Hearts', 'H', '&hearts;'),
+    3: new Suit('Spades', 'S', '&spades;')
+  };
 
 // Class for Card
 
-var Card = function(value, suit) {
-    this.value = value;
+var Card = function(suit, value) {
     this.suit = suit;
+    this.value = value;
     this.visible = false;
 };
 
 Card.prototype.getValue = function() {
-    console.log(this.value);
-  
+    return (this.value > 10) ? 10 : this.value;
 };
 
-Card.prototype.getSuit = function(){
-   console.log(this.suit);
-};
+Card.prototype.getName = function() {
+    if (this.value > 1 && this.value <= 10) {
+      return this.value;
+    } else {
+      switch (this.value) {
+      case 1:
+        return 'A';
+      case 11:
+        return 'J';
+      case 12:
+        return 'Q';
+      case 13:
+        return 'K';
+      }
+    }
+  };
+
+
+  Card.prototype.getSuit = function() {
+     return suits[this.suit];
+
+  //  switch (this.suit) {
+  //    case 0: 
+  //        return suits[0];
+  //    case 1: 
+  //        return suits[1];
+  //    case 2: 
+  //        return suits[2];
+  //    case 3:
+  //        return suits[3]
+  };
 
 // Class for Deck
 
-
 var Deck = function() {
     this.array = [];
-    //Create Deck
+}
+
+// Method to build deck
+Deck.prototype.build = function() {
     for(var suit = 0; suit <= 3; suit++){
         for(var value = 1; value<=13; value++){
             this.array.push([suit, value]);
         }
     }
+    return this.array;
 }
 
-
+// Method to shuffle deck
 //Fisher-Yates shuffle
 
 Deck.prototype.shuffle = function() {
-    //console.log(this.deck);
     var m = this.array.length, t, i;
     
     while (m) {
@@ -48,44 +94,52 @@ Deck.prototype.shuffle = function() {
      return this.array;
 }
 
+///// From GIST 
 
-var deck1 = new Deck();
+Card.prototype.display = function() {
+    if (this.visible) {
+      return $('<div class="card ' + suits[this.suit].name + '">' +
+                 '<span class="rank">' + this.getName() + '</span>' +
+                 '<span class="suit">' + suits[this.suit].char + '</span>' +
+               '</div>').data('card', this);
+    } else {
+      return $('<div class="card back ' + suits[this.suit].name + '">' +
+                 '<span class="rank">' + this.getName() + '</span>' +
+                 '<span class="suit">' + suits[this.suit].char + '</span>' +
+               '</div>').data('card', this);
+    }
+  };
+ 
+  Card.prototype.toggleVisibility = function() {
+    this.visible = !this.visible;
+    return this.display();
+  };
 
-console.log(deck1.shuffle());
+// deal
 
+var deal = function() {
+    var deckOne = new Deck();
+        deckOne.build();
+        deckOne.shuffle();
+    userCard1 = deckOne.array.shift();
+    dealerCard1 = deckOne.array.shift();
+    userCard2 = deckOne.array.shift();
+    dealerCard2 = deckOne.array.shift();
+};
+    
 
-// Method to build deck
+deal();
 
-// Method to shuffle deck
+var userCardOne = new Card(userCard1[0], userCard1[1]);
+var userCardTwo = new Card(userCard2[0], userCard2[1]);
+var dealerCardOne = new Card(dealerCard1[0], dealerCard1[1]);
+var dealerCardTwo = new Card(dealerCard2[0], dealerCard2[1]);
 
+console.log(userCardOne, userCardTwo, dealerCardOne, dealerCardTwo);
+console.log(suits[userCardOne.suit].char);
 
-var userCard = new Card('2', 'diamonds');
-
-/*
-
-
-
-   	Ace   = 1,
-    Two   = 2,
-    Three = 3,
-    Four  = 4,
-    Five  = 5,
-    Six   = 6,
-    Seven = 7,
-    Eight = 8,
-    Nine  = 9,
-    Ten   = 10,
-    Jack  = 11,
-    Queen = 12,
-    King  = 13,
+console.dir(userCardOne.toggleVisibility());
 
 
 
 
-    Club    = 1,
-    Diamond = 2,
-    Heart   = 3,
-    Spades  = 4
-
-
-    */
